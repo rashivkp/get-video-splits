@@ -20,29 +20,26 @@ else
     length='05:00'
 fi
 
-start=$2
+start_at=$2
+prefix=$3
 i=1
 
-ffmpeg $(youtube-dl -f 18 -g $1 | sed "s/^/-ss $start -i /") -t "$length" -c copy $3_$i.mp4
+ffmpeg $(youtube-dl -f 18 -g $1 | sed "s/^/-ss $start_at -i /") -t "$length" -c copy "$prefix"_$i.mp4
 
 
-start_seconds=$(echo $start | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
+start_seconds=$(echo $start_at | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
 length_seconds=$(echo $length | awk -F: '{ print ($1 * 60) + $2 }')
 
 while :
 do
-    echo "\n\n"
     read -p "Do you want to continue to next split (y/n)" go_next
     if [ $go_next != 'y' ]; then
         break
     fi
 
-    echo $start_seconds $length_seconds
     start_seconds=$(($start_seconds + $length_seconds))
-    start=$(echo "$start_seconds" | awk -F: '{ printf "%.2d:%.2d:%.2d", int($1 / 3600), int(($1 % 3600)/60),  ($1 % 60) }')
+    start_at=$(echo "$start_seconds" | awk -F: '{ printf "%.2d:%.2d:%.2d", int($1 / 3600), int(($1 % 3600)/60),  ($1 % 60) }')
     length=$(echo "$length_seconds" | awk -F: '{ printf "%.2d:%.2d:%.2d", int($1 / 3600), int(($1 % 3600)/60),  ($1 % 60) }')
-    echo $start $length $start_seconds
-    i=$((i+1))
-    ffmpeg $(youtube-dl -f 18 -g $1 | sed "s/^/-ss $start -i /") -t "$length" -c copy $3_$i.mp4
-    echo $3_$i $start
+    i=$(($i + 1))
+    ffmpeg $(youtube-dl -f 18 -g $1 | sed "s/^/-ss $start_at -i /") -t "$length" -c copy "$prefix"_$i.mp4
 done
