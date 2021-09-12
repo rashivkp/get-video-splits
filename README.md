@@ -1,4 +1,4 @@
-# get-vidoe-splits
+# get-video-splits
 
 Download youtube video splits using youtube-dl, ffmpeg and save them as mp4
 files. It will interactively ask for download confirmation to repeat the process
